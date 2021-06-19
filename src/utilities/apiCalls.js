@@ -31,6 +31,20 @@ export const apiPostTransactions = async (newData) => {
     }
 }
 
-export const funcName2 = () => {
-    
+export const apiPutTransactions = async (ids, newData) => {
+    try {
+        const { data } = await axios.put(`${apiURL}/${ids}`, newData);
+        return data;
+    } catch (e) {
+        return "error";
+    }
+}
+
+export const apiDeleteTransactions = async (ids) => {
+    try {
+        const { data } = await axios.delete(`${apiURL}/${ids}`);
+        return data;
+    } catch (e) {
+        return "error";
+    }
 }

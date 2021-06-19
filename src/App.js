@@ -6,6 +6,7 @@ import NavBar from "./components/NavBar";
 import Index from "./components/Index";
 import New from "./components/New";
 import TransactionDetails from "./components/TransactionDetails";
+import TransactionEdit from "./components/TransactionEdit";
 
 import NotFound from "./pages/NotFound";
 import ServerErrorMsg from "./pages/ServerErrorMsg";
@@ -31,7 +32,7 @@ export default class App extends Component {
         return (
             <div className="App">
                 <Router>
-                    <NavBar />
+                    <NavBar sendRequest={this.getTransactions} />
                     <main>
                         <Switch>
                             <Route exact path="/">
@@ -44,9 +45,12 @@ export default class App extends Component {
                                 {error && <ServerErrorMsg />}
                                 <New sendRequest={this.getTransactions}/>
                             </Route>
-                            <Route path="/transactions/:id">
+                            <Route exact path="/transactions/:id">
                                 {error && <ServerErrorMsg />}
-                                <TransactionDetails />
+                                <TransactionDetails sendRequest={this.getTransactions}/>
+                            </Route>
+                            <Route path="/transactions/:id/Edit">
+                                <TransactionEdit />
                             </Route>
                             <Route path="*">
                                 <NotFound />
