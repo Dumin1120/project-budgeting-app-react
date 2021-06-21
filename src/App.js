@@ -41,7 +41,7 @@ export default class App extends Component {
         const { transactions, prevIds, error } = this.state;
 
         return (
-            <div className="bg-secondary" style={{ position: "absolute", top: "0px", bottom: "0px", left: "0px", right: "0px" }}>
+            <div className="bg-secondary" style={{ position: "absolute", top: "0px", bottom: "0px", left: "0px", right: "0px", overflowY: "auto" }}>
                 <Router>
                     <NavBar requestUpdate={this.getTransactions} />
                     <main>
