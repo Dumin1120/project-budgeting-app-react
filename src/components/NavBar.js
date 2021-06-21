@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 
-export default function NavBar({ sendRequest }) {
+export default function NavBar({ requestUpdate }) {
     return (
-        <nav>
-            <h1>
-                <Link to="/" onClick={sendRequest}>Budgeting App</Link>
-            </h1>
-            <button>
-                <Link to="/transactions/new">Add new transaction</Link>
-            </button>
+        <nav className="navbar navbar-light bg-warning">
+            <h2>
+                <Link to="/" onClick={requestUpdate} style={{ border: "none", background: "none" }} className="page-link">Budgeting App</Link>
+            </h2>
+            <Link to="/transactions/new">
+                <button className="btn btn-outline-primary me-2 fw-bold">Add new transaction</button>
+            </Link>
         </nav>
     )
 }

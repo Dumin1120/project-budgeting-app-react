@@ -1,29 +1,84 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useHistory } from "react-router-dom";
 import Transaction from './Transaction';
 
-export default function Index({ transactions }) {
+export default function Index({ transactions, deleteTransactions }) {
+    const [ checkboxes, setCheckboxes ] = useState([]);
+    const history = useHistory();
+
+    for (let i = transactions.length - 1; i >= 0; i--) {
+        transactions[i].balance = Number(((transactions[i + 1] ? transactions[i + 1].balance : 0) + transactions[i].amount).toFixed(2));
+    }
+
+    useEffect(() => {
+        const arr = transactions.map(tran => ({ id: tran.id, checked: false }));
+        setCheckboxes(arr);
+    }, [transactions])
+
+    const setSingleCheckbox = (index) => {
+        const copy = [...checkboxes];
+        copy[index].checked = !copy[index].checked;
+        setCheckboxes(copy);
+    }
+    
+    const setBalanceColor = () => {
+        if (transactions[0]) {
+            if (transactions[0].balance >= 1000)
+                return "text-success";
+
+            if (transactions[0].balance < 0)
+                return "text-danger";
+        }
+        return "text-dark";
+    }
+
+    const getIdsFromCheckboxes = () => checkboxes.filter(obj => obj.checked).map(obj => obj.id).join(",");
+
+    const handleTansEdit = () => {
+        const ids = getIdsFromCheckboxes();
+        history.push(`/transactions/${ids}`);
+    }
+
+    const handleTransDelete = () => {
+        const ids = getIdsFromCheckboxes();
+        deleteTransactions(ids);
+    }
+
+    const tableHeading = <thead>
+        <tr className="align-middle">
+            <th style={{ height: "55px" }}>Date</th>
+            <th>Description</th>
+            <th className="text-center">Amount</th>
+            <th className="text-center">Balance</th>
+            <th className="text-center" style={{ width: "148px" }}>
+                {checkboxes.findIndex(obj => obj.checked) < 0 ? "Select" : (
+                <>
+                    <button className="btn btn-info" onClick={handleTansEdit}>Edit</button>&nbsp;
+                    <button className="btn btn-danger" onClick={handleTransDelete}>Delete</button>
+                </>)}
+            </th>
+        </tr>
+    </thead>
+
     return (
         <div className="transaction">
             <section>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>col one</th>
-                            <th>col two</th>
-                            <th>col 3</th>
-                            <th>col 4</th>
+                <table className="table table-dark table-hover align-middle">
+                    {<thead>
+                        <tr className="table-info">
+                            <th colSpan="5" className="text-center">
+                                <h3 className="fw-bold">
+                                    Available Balance:&emsp;
+                                    <span className={setBalanceColor()}>${transactions[0] ? transactions[0].balance.toFixed(2) : "0.00"}</span>
+                                </h3>
+                            </th>
                         </tr>
-                    </thead>
+                    </thead>}
+                    {tableHeading}
                     <tbody>
-                        {transactions.map(tran => {
-                            return (
-                                <Transaction
-                                    key={tran.id}
-                                    transaction={tran}
-                                />
-                            )
-                        })}
+                        {transactions.map((tran, i) => <Transaction key={tran.id} transaction={tran} index={i} checked={checkboxes[i] ? checkboxes[i].checked : false} setCheckbox={setSingleCheckbox} />)}
                     </tbody>
+                    {tableHeading}
                 </table>
             </section>
         </div>

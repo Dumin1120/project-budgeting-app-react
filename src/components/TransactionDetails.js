@@ -1,48 +1,70 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useHistory } from "react-router-dom";
-import { apiGetTransactionsWithIds, apiDeleteTransactions } from "../utilities/apiCalls";
-import ServerErrorMsg from '../pages/ServerErrorMsg';
+import { apiGetTransactionsByIds, apiDeleteTransactions } from "../utilities/apiCalls";
+import { moneyFormatter } from "../utilities/formatter";
 
-function TransactionDetails({ sendRequest }) {
-    const [ transaction, setTransaction ] = useState([]);
-    const [ failed, setFailed ] = useState(false);
+function TransactionDetails({ requestUpdate, setPrevIds }) {
+    const [ transactions, setTransactions ] = useState([]);
     const history = useHistory();
     const { id } = useParams();
+    const counter = useRef(0);
 
     useEffect(() => {
         const apiCall = async () => {
-            const data = await apiGetTransactionsWithIds(id);
-            if (data === "error" || data.length === 0)
+            const data = await apiGetTransactionsByIds(id);
+            if (data === "error" || !data.length)
                 return history.push("/NotFound");
-    
-            setTransaction(data);
+
+            counter.current = data.length;
+            setPrevIds(id);
+            setTransactions(data);
         }
         apiCall();
-    }, [id, history])
+    }, [id, history, setPrevIds])
 
-    const deleteTran = async (id) => {
+    const deleteTransaction = async (id, index) => {
         const data = await apiDeleteTransactions(id);
-        if (data === "error" || data.length === 0)
-            return setFailed(true);
+        if (data === "error" || !data.length)
+            return history.push("/NotFound");
         
-        sendRequest();
+        counter.current--;
+        if (counter.current !== 0) {
+            const copy = [...transactions];
+            copy.splice(index, 1);
+            return setTransactions(copy);
+        }
+
+        goBack();
+    }
+
+    const goBack = () => {
+        requestUpdate();
         history.push("/");
     }
 
     return (
         <div>
             <ul>
-                {transaction.map(tran => (
-                    <li key={tran.id}>
-                        <h2>Transaction ID: {tran.id}</h2>
-                        <h2>Name:   {tran.name}</h2>
-                        <h2>Amount: {tran.amount}</h2>
-                        <h2>From:   {tran.from}</h2>
+                {transactions.map((tran, i) => (
+                    <table className="table table-striped fs-4 text-white" style={{ marginBottom: "30px" }} key={tran.id}>
+                        <tr>
+                            <td>ID: {tran.id}</td>
+                        </tr>
+                        <tr>
+                            <td>Name: {tran.name}</td>
+                        </tr>
+                        <tr>
+                            <td>Amount: ${moneyFormatter(tran.amount)}</td>
+                        </tr>
+                        <tr>
+                            <td>From: {tran.from}</td>
+                        </tr>
+                        <button className="btn btn-primary" style={{ marginRight: "20px" }} onClick={goBack}>Go Back</button>
                         <Link to={`/transactions/${tran.id}/edit`}>
-                            <button>Edit</button>
+                            <button className="btn btn-info" style={{ width: "90px" }}>Edit</button>
                         </Link>
-                        <button onClick={() => deleteTran(tran.id)}>Delete</button>
-                    </li>
+                        <button className="btn btn-danger" style={{ marginLeft: "20px" }} onClick={() => deleteTransaction(tran.id, i)}>Delete</button>
+                    </table>
                 ))}
             </ul>
         </div>

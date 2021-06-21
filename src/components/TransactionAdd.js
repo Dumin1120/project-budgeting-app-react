@@ -1,45 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useHistory } from "react-router-dom";
-import { apiGetTransactionsByIds, apiPutTransactions } from "../utilities/apiCalls";
+import { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import { apiPostTransactions } from "../utilities/apiCalls";
 
-export default function TransactionEdit({ prevIds }) {
-    const [ transaction, setTransaction ] = useState({});
-    let { id } = useParams();
-    let history = useHistory();
+function New({ requestUpdate }) {
+    const history = useHistory();
+    const [ failed, setFailed ] = useState(false);
+    const [ transaction, setTransaction ] = useState({
+        date: "",
+        name: "",
+        amount: "",
+        from: ""
+    })
 
     useEffect(() => {
-        const apiCall = async () => {
-            const data = await apiGetTransactionsByIds(id);
-            if (data === "error" || !data.length)
-                return history.push("/NotFound");
-    
-            setTransaction(data[0]);
-        }
-        apiCall();
-    }, [id, history])
+        let today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const yy = String(today.getFullYear()).slice(2);
+        today = mm + '/' + dd + '/' + yy;
+        setTransaction(prev => ({ ...prev, date: today }));
+    },[])
 
     const handleTextChange = (event) => {
         const { id, value } = event.target;
-        setTransaction({ ...transaction, [id]: id === "amount" ? Number(value) : value });
+        setTransaction({ ...transaction, [id]: (id === "amount" ? Number(value) : value) });
     }
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
-        const data = await apiPutTransactions(id, transaction);
-        if (data === "error" || !data.length)
-            return history.push("/NotFound");
+        apiCall();
+    }
 
+    const apiCall = async () => {
+        const data = await apiPostTransactions(transaction);
+        if (data === "error")
+            return setFailed(true);
+        
         goBack();
     }
 
     const goBack = () => {
-        history.push(`/transactions/${prevIds}`);
+        requestUpdate();
+        history.push("/");
     }
 
     return (
         <div>
-            <br />
-            <br />
+        <br />
+        <br />
+            {failed && <h1>Please use correct data format or valid data.</h1>}
             <form className="row g-3" onSubmit={handleSubmit} key={transaction.id}>
                 <div className="row mb-3">
                     <label htmlFor="name" className="col-sm-1 col-form-label fw-bold">Name:</label>
@@ -98,11 +107,13 @@ export default function TransactionEdit({ prevIds }) {
                 </div>
                 <br />
                 <div className="col-12">
-                    <button type="submit" className="btn btn-info" style={{ width: "100px" }}>Update</button>
+                    <button type="submit" className="btn btn-info">Create new transaction</button>
                 </div>
             </form>
             <br />
-            <button className="btn btn-primary" style={{ width: "100px" }} onClick={goBack}>Go Back</button>
+            <button className="btn btn-primary" style={{ width: "150px" }} onClick={goBack}>Go Back</button>
         </div>
     )
 }
+
+export default New;

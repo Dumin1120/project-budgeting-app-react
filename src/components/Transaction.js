@@ -1,30 +1,27 @@
 import React from 'react';
 import { Link } from "react-router-dom";
+import { moneyFormatter } from '../utilities/formatter';
 
-export default function Transaction({ transaction }) {
+export default function Transaction({ transaction, index, checked, setCheckbox }) {
     return (
-        <tr>
+        <tr className={transaction.amount < 0 ? "table-danger" : "table-success"}>
             <td>
                 {transaction.date}
             </td>
             <td>
-                {transaction.name}
-            </td>
-            <td>
-                {transaction.amount}
-            </td>
-            <td>
                 <Link to={`/transactions/${transaction.id}`}>
-                    <button>...</button>
+                    {transaction.name}
                 </Link>
+            </td>
+            <td className="text-center">
+                {moneyFormatter(transaction.amount)}
+            </td>
+            <td className="text-center">
+                {moneyFormatter(transaction.balance)}
+            </td>
+            <td className="text-center">
+                <input type="checkbox" checked={checked} onChange={() => setCheckbox(index)} />
             </td>
         </tr>
     )
 }
-/*
-<td>
-<a href={bookmark.url} target="_blank" rel="noreferrer">
-    {bookmark.name}✏️
-</a>
-</td>
-*/

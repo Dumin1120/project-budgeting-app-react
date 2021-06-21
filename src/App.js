@@ -1,18 +1,17 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { apiGetTransactions } from "./utilities/apiCalls";
+import { apiDeleteTransactions, apiGetTransactions } from "./utilities/apiCalls";
 
 import NavBar from "./components/NavBar";
 import Index from "./components/Index";
-import New from "./components/New";
+import TransactionAdd from "./components/TransactionAdd";
 import TransactionDetails from "./components/TransactionDetails";
 import TransactionEdit from "./components/TransactionEdit";
 
 import NotFound from "./pages/NotFound";
-import ServerErrorMsg from "./pages/ServerErrorMsg";
 
 export default class App extends Component {
-    state = { transactions: [], error: false };
+    state = { transactions: [], prevIds: "", error: false };
 
     getTransactions = async () => {
         const data = await apiGetTransactions();
@@ -22,35 +21,43 @@ export default class App extends Component {
         this.setState({ transactions: data.reverse(), error: false });
     }
 
+    deleteTransactions = async (ids) => {
+        const data = await apiDeleteTransactions(ids);
+        if (data === "error" || !data.length)
+            return this.setState({ error: true });
+
+        this.getTransactions();
+    }
+
+    setPrevIds = (ids) => {
+        this.setState({ prevIds: ids });
+    }
+
     componentDidMount() {
         this.getTransactions();
     }
 
     render() {
-        const { transactions, error } = this.state;
+        const { transactions, prevIds, error } = this.state;
 
         return (
-            <div className="App">
+            <div className="bg-secondary" style={{ position: "absolute", top: "0px", bottom: "0px", left: "0px", right: "0px" }}>
                 <Router>
-                    <NavBar sendRequest={this.getTransactions} />
+                    <NavBar requestUpdate={this.getTransactions} />
                     <main>
                         <Switch>
                             <Route exact path="/">
-                                {error && <ServerErrorMsg />}
-                                <Index
-                                    transactions={transactions}
-                                />
+                                {error && <NotFound />}
+                                <Index transactions={transactions} deleteTransactions={this.deleteTransactions} />
                             </Route>
                             <Route path="/transactions/new">
-                                {error && <ServerErrorMsg />}
-                                <New sendRequest={this.getTransactions}/>
+                                <TransactionAdd requestUpdate={this.getTransactions}/>
                             </Route>
                             <Route exact path="/transactions/:id">
-                                {error && <ServerErrorMsg />}
-                                <TransactionDetails sendRequest={this.getTransactions}/>
+                                <TransactionDetails requestUpdate={this.getTransactions} setPrevIds={this.setPrevIds} />
                             </Route>
                             <Route path="/transactions/:id/Edit">
-                                <TransactionEdit />
+                                <TransactionEdit prevIds={prevIds} />
                             </Route>
                             <Route path="*">
                                 <NotFound />

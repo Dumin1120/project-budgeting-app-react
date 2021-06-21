@@ -1,0 +1,1 @@
+export const moneyFormatter = (num) => num.toFixed(2);
