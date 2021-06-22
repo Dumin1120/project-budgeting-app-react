@@ -44,7 +44,7 @@ export default function Index({ transactions, deleteTransactions }) {
         deleteTransactions(ids);
     }
 
-    const tableHead = (
+    const tableHeader = (
         <thead>
             <tr className="align-middle">
                 <th style={{ height: "48px" }}>Date</th>
@@ -76,7 +76,7 @@ export default function Index({ transactions, deleteTransactions }) {
                             </th>
                         </tr>
                     </thead>
-                    {tableHead}
+                    {tableHeader}
                     <tbody>
                         {transactions.map((tran, i) => (
                             <Transaction
@@ -88,7 +88,7 @@ export default function Index({ transactions, deleteTransactions }) {
                             />
                         ))}
                     </tbody>
-                    {tableHead}
+                    {transactions.length > 3 && tableHeader}
                 </table>
             </section>
         </div>
