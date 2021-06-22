@@ -44,27 +44,29 @@ export default function Index({ transactions, deleteTransactions }) {
         deleteTransactions(ids);
     }
 
-    const tableHeading = <thead>
-        <tr className="align-middle">
-            <th style={{ height: "55px" }}>Date</th>
-            <th>Description</th>
-            <th className="text-center">Amount</th>
-            <th className="text-center">Balance</th>
-            <th className="text-center" style={{ width: "148px" }}>
-                {checkboxes.findIndex(obj => obj.checked) < 0 ? "Select" : (
-                <>
-                    <button className="btn btn-info" onClick={handleTansEdit}>Edit</button>&nbsp;
-                    <button className="btn btn-danger" onClick={handleTransDelete}>Delete</button>
-                </>)}
-            </th>
-        </tr>
-    </thead>
+    const tableHead = (
+        <thead>
+            <tr className="align-middle">
+                <th style={{ height: "48px" }}>Date</th>
+                <th>Description</th>
+                <th className="text-center">Amount</th>
+                <th className="show-hide">Balance</th>
+                <th className="text-center" style={{ width: "125px" }}>
+                    {checkboxes.findIndex(obj => obj.checked) < 0 ? "Select" : (
+                    <>
+                        <button className="btn btn-info btn-sm" onClick={handleTansEdit}>Edit</button>&nbsp;
+                        <button className="btn btn-danger btn-sm" onClick={handleTransDelete}>Delete</button>
+                    </>)}
+                </th>
+            </tr>
+        </thead>
+    )
 
     return (
         <div className="transaction">
             <section>
                 <table className="table table-dark table-hover align-middle">
-                    {<thead>
+                    <thead>
                         <tr className="table-info">
                             <th colSpan="5" className="text-center">
                                 <h3 className="fw-bold">
@@ -73,12 +75,20 @@ export default function Index({ transactions, deleteTransactions }) {
                                 </h3>
                             </th>
                         </tr>
-                    </thead>}
-                    {tableHeading}
+                    </thead>
+                    {tableHead}
                     <tbody>
-                        {transactions.map((tran, i) => <Transaction key={tran.id} transaction={tran} index={i} checked={checkboxes[i] ? checkboxes[i].checked : false} setCheckbox={setSingleCheckbox} />)}
+                        {transactions.map((tran, i) => (
+                            <Transaction
+                                key={tran.id}
+                                transaction={tran}
+                                index={i}
+                                checked={checkboxes[i] ? checkboxes[i].checked : false}
+                                setCheckbox={setSingleCheckbox}
+                            />
+                        ))}
                     </tbody>
-                    {tableHeading}
+                    {tableHead}
                 </table>
             </section>
         </div>

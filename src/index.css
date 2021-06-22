@@ -11,3 +11,40 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.budget-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+}
+
+.screen {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  overflow-y: auto;
+  text-align: center;
+}
+
+.show-hide {
+  text-align: center;
+}
+
+@media screen and (max-width: 1280px) {
+  .screen {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 410px) {
+  .screen {
+    width: 100%;
+  }
+
+  .show-hide {
+    display: none;
+  }
+}

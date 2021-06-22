@@ -16,11 +16,11 @@ export default function Transaction({ transaction, index, checked, setCheckbox }
             <td className="text-center">
                 {moneyFormatter(transaction.amount)}
             </td>
-            <td className="text-center">
+            <td className="show-hide">
                 {moneyFormatter(transaction.balance)}
             </td>
             <td className="text-center">
-                <input type="checkbox" checked={checked} onChange={() => setCheckbox(index)} />
+                <input className="form-check-input" type="checkbox" checked={checked} onChange={() => setCheckbox(index)} />
             </td>
         </tr>
     )

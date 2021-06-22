@@ -2,8 +2,11 @@ import React from 'react'
 
 export default function ServerErrorMsg() {
     return (
-        <h2>
-            Something unexpected happened, server request is not fulfilled.
-        </h2>
+        <div className="bg-white">
+            <h2 className="text-center text-danger">
+                Something unexpected happened, server is not responding.<br />
+                Please try again later.
+            </h2>
+        </div>
     )
 }

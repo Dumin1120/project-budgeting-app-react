@@ -2,12 +2,9 @@ import React from 'react'
 
 export default function NotFound() {
     return (
-        <div>
+        <div className="text-center">
             <h3>
-                Something unexpected happened, unable to make server request.
-            </h3>
-            <h3>
-                Please try again later.
+                Not Found.
             </h3>
         </div>
     )

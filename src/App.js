@@ -9,6 +9,7 @@ import TransactionDetails from "./components/TransactionDetails";
 import TransactionEdit from "./components/TransactionEdit";
 
 import NotFound from "./pages/NotFound";
+import ServerErrorMsg from "./pages/ServerErrorMsg";
 
 export default class App extends Component {
     state = { transactions: [], prevIds: "", error: false };
@@ -41,14 +42,13 @@ export default class App extends Component {
         const { transactions, prevIds, error } = this.state;
 
         return (
-            <div className="bg-secondary" style={{ position: "absolute", top: "0px", bottom: "0px", left: "0px", right: "0px", overflowY: "auto" }}>
+            <div className="bg-secondary screen">
                 <Router>
                     <NavBar requestUpdate={this.getTransactions} />
                     <main>
                         <Switch>
                             <Route exact path="/">
-                                {error && <NotFound />}
-                                <Index transactions={transactions} deleteTransactions={this.deleteTransactions} />
+                                {error ? <ServerErrorMsg /> : <Index transactions={transactions} deleteTransactions={this.deleteTransactions} />}
                             </Route>
                             <Route path="/transactions/new">
                                 <TransactionAdd requestUpdate={this.getTransactions}/>
